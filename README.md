@@ -8,6 +8,8 @@ Este repositorio contiene los archivos SQL utilizados para la creación y gesti�
   - Estructura de las tablas del data warehouse.
   - Relacionamiento entre las tablas mediante claves foráneas.
   - Inserción de datos iniciales en las tablas.
+  - Los procesos realizados en AI Studio
+  - Anexos del trabajo
 - **Dataset Generado:**
   - Scripts con datos generados para poblar las tablas del data warehouse. Estos datos incluyen información sobre pacientes, doctores, medicamentos, y más.
 

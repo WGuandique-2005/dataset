@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="10.5.000">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="10.5.000" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="10.5.000" expanded="true" height="68" name="Retrieve detallesPedido" width="90" x="112" y="136">
+        <parameter key="repository_entry" value="//Local Repository/processes/detallesPedido"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="10.5.000" expanded="true" height="68" name="Retrieve pedido" width="90" x="112" y="34">
+        <parameter key="repository_entry" value="//Local Repository/processes/pedido"/>
+      </operator>
+      <operator activated="true" class="concurrency:join" compatibility="10.5.000" expanded="true" height="82" name="Join" width="90" x="380" y="34">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="id_pedido" value="pedido_id"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="10.5.000" expanded="true" height="68" name="Retrieve medicamento" width="90" x="112" y="238">
+        <parameter key="repository_entry" value="//Local Repository/processes/medicamento"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="10.5.000" expanded="true" height="68" name="Retrieve categoria" width="90" x="112" y="340">
+        <parameter key="repository_entry" value="//Local Repository/processes/categoria"/>
+      </operator>
+      <operator activated="true" class="concurrency:join" compatibility="10.5.000" expanded="true" height="82" name="Join (2)" width="90" x="380" y="238">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="categoria_id" value="id_categoria"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="concurrency:join" compatibility="10.5.000" expanded="true" height="82" name="Análisis cruzado de los medicamentos recetados a los pacientes con base en su disponibilidad en inventario, categorización, y vigencia" width="90" x="581" y="136">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="medicamento_id" value="id_medicamento"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <connect from_op="Retrieve detallesPedido" from_port="output" to_op="Join" to_port="right"/>
+      <connect from_op="Retrieve pedido" from_port="output" to_op="Join" to_port="left"/>
+      <connect from_op="Join" from_port="join" to_op="Análisis cruzado de los medicamentos recetados a los pacientes con base en su disponibilidad en inventario, categorización, y vigencia" to_port="left"/>
+      <connect from_op="Retrieve medicamento" from_port="output" to_op="Join (2)" to_port="left"/>
+      <connect from_op="Retrieve categoria" from_port="output" to_op="Join (2)" to_port="right"/>
+      <connect from_op="Join (2)" from_port="join" to_op="Análisis cruzado de los medicamentos recetados a los pacientes con base en su disponibilidad en inventario, categorización, y vigencia" to_port="right"/>
+      <connect from_op="Análisis cruzado de los medicamentos recetados a los pacientes con base en su disponibilidad en inventario, categorización, y vigencia" from_port="join" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>

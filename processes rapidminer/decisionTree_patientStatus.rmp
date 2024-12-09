@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="10.5.000">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="10.5.000" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="10.5.000" expanded="true" height="68" name="Retrieve especialidad" width="90" x="45" y="85">
+        <parameter key="repository_entry" value="//Local Repository/processes/especialidad"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="10.5.000" expanded="true" height="68" name="Retrieve doctor" width="90" x="45" y="187">
+        <parameter key="repository_entry" value="//Local Repository/processes/doctor"/>
+      </operator>
+      <operator activated="true" class="concurrency:join" compatibility="10.5.000" expanded="true" height="82" name="Join" width="90" x="179" y="85">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="id_especialidad" value="especialidad_id"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="10.5.000" expanded="true" height="68" name="Retrieve paciente" width="90" x="179" y="187">
+        <parameter key="repository_entry" value="//Local Repository/processes/paciente"/>
+      </operator>
+      <operator activated="true" class="concurrency:join" compatibility="10.5.000" expanded="true" height="82" name="Join (2)" width="90" x="380" y="187">
+        <parameter key="remove_double_attributes" value="true"/>
+        <parameter key="join_type" value="inner"/>
+        <parameter key="use_id_attribute_as_key" value="false"/>
+        <list key="key_attributes">
+          <parameter key="id_doctor" value="doctor_id"/>
+        </list>
+        <parameter key="keep_both_join_attributes" value="false"/>
+      </operator>
+      <operator activated="true" class="blending:set_role" compatibility="10.5.000" expanded="true" height="82" name="Set Role" width="90" x="514" y="187">
+        <list key="set_roles">
+          <parameter key="apellido_paciente" value="metadata"/>
+          <parameter key="direccion" value="metadata"/>
+          <parameter key="disponibilidad" value="interpretation"/>
+          <parameter key="edad" value="regular"/>
+          <parameter key="email" value="metadata"/>
+          <parameter key="estado_paciente" value="regular"/>
+          <parameter key="fecha_nacimiento" value="interpretation"/>
+          <parameter key="genero" value="regular"/>
+          <parameter key="id_doctor" value="id"/>
+          <parameter key="id_especialidad" value="id"/>
+          <parameter key="id_paciente" value="id"/>
+          <parameter key="nombre_doctor" value="metadata"/>
+          <parameter key="nombre_especialidad" value="regular"/>
+          <parameter key="nombre_paciente" value="label"/>
+          <parameter key="telefono" value="metadata"/>
+        </list>
+      </operator>
+      <operator activated="true" class="concurrency:parallel_decision_tree" compatibility="10.5.000" expanded="true" height="103" name="Decision Tree" width="90" x="715" y="85">
+        <parameter key="criterion" value="gain_ratio"/>
+        <parameter key="maximal_depth" value="10"/>
+        <parameter key="apply_pruning" value="true"/>
+        <parameter key="confidence" value="0.1"/>
+        <parameter key="apply_prepruning" value="true"/>
+        <parameter key="minimal_gain" value="0.01"/>
+        <parameter key="minimal_leaf_size" value="2"/>
+        <parameter key="minimal_size_for_split" value="4"/>
+        <parameter key="number_of_prepruning_alternatives" value="3"/>
+      </operator>
+      <connect from_op="Retrieve especialidad" from_port="output" to_op="Join" to_port="left"/>
+      <connect from_op="Retrieve doctor" from_port="output" to_op="Join" to_port="right"/>
+      <connect from_op="Join" from_port="join" to_op="Join (2)" to_port="left"/>
+      <connect from_op="Retrieve paciente" from_port="output" to_op="Join (2)" to_port="right"/>
+      <connect from_op="Join (2)" from_port="join" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Decision Tree" to_port="training set"/>
+      <connect from_op="Decision Tree" from_port="model" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>

@@ -19,4 +19,4 @@ Este repositorio contiene los archivos SQL utilizados para la creación y gesti�
 ## Cómo Utilizar Este Repositorio  
 1. Clona el repositorio en tu máquina local:
    ```bash
-   git clone https://github.com/WGuandique-2005/datase.git
+   https://github.com/WGuandique-2005/datase.git
